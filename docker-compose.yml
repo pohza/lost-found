@@ -1,0 +1,10 @@
+version: "3.9"
+
+services:
+  frontend:
+    build: .
+    container_name: lost-found-frontend
+    ports:
+      - "8080:80"
+    restart: unless-stopped
+

@@ -154,6 +154,29 @@ export default defineConfig({
    - Message threads ควรถูกสร้างโดย backend เมื่อมี claim หรือ notification
    - Frontend ไม่ได้สร้าง thread เอง แค่แสดงและส่งข้อความ
 
+## 🐳 Docker Support (Frontend)
+
+มี Dockerfile และ docker-compose สำหรับรัน frontend แบบ container แล้ว
+
+### Build & Run ด้วย Docker ตรง ๆ
+
+```bash
+docker build -t lost-found-frontend .
+docker run --rm -p 8080:80 lost-found-frontend
+```
+
+จากนั้นเปิด `http://localhost:8080`
+
+### ใช้ Docker Compose
+
+```bash
+docker compose up --build
+```
+
+ระบบจะรันที่ `http://localhost:8080`
+
+> หมายเหตุ: ถ้ามี backend service แยกต่างหาก สามารถเพิ่มเข้าไปใน `docker-compose.yml` และตั้งค่า proxy `/api` ใน `nginx.conf` ให้ชี้ไปที่ backend ได้
+
 ## 📄 License
 
 Private project
