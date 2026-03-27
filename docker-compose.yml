@@ -1,10 +1,50 @@
 version: "3.9"
 
 services:
+  mysql:
+    image: mysql:8.0
+    container_name: lostfound-mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: lostfound
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./backend/sql:/docker-entrypoint-initdb.d
+
+  api:
+    build: ./backend
+    container_name: lostfound-api
+    restart: always
+    ports:
+      - "3000:3000"
+    depends_on:
+      - mysql
+    environment:
+      DB_HOST: mysql
+      DB_USER: root
+      DB_PASSWORD: root
+      DB_NAME: lostfound
+      JWT_SECRET: supersecret
+    volumes:
+      - ./backend:/app
+    command: npm run dev
+
   frontend:
-    build: .
-    container_name: lost-found-frontend
+    build: ./frontend
+    container_name: lostfound-frontend
     ports:
       - "8080:80"
-    restart: unless-stopped
+    depends_on:
+      - api
+    environment:
+      VITE_API_URL: http://localhost:3000/api
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    command: npm run dev -- --host
 
+volumes:
+  mysql_data:
