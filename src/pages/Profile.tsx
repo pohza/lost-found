@@ -38,7 +38,7 @@ function ProfilePage() {
     let cancelled = false;
     (async () => {
       try {
-        const res = await fetch("/api/me", { headers: authHeaders() });
+        const res = await fetch("http://localhost:3000/api/me", { headers: authHeaders() });
         if (res.ok) {
           const data = (await res.json()) as { fullName?: string; email?: string };
           if (!cancelled) {
@@ -58,7 +58,7 @@ function ProfilePage() {
   const saveProfile = useCallback(() => {
     (async () => {
       try {
-        const res = await fetch("/api/me", {
+        const res = await fetch("http://localhost:3000/api/me", {
           method: "PATCH",
           headers: authHeaders({ "Content-Type": "application/json" }),
           body: JSON.stringify({ fullName, email }),

@@ -23,7 +23,7 @@ function MessagesPage() {
     let cancelled = false;
     async function load() {
       try {
-        const res = await fetch("/api/me/messages", { headers: authHeaders() });
+        const res = await fetch("http://localhost:3000/api/me/messages", { headers: authHeaders() });
         if (res.ok) {
           const data = (await res.json()) as unknown;
           if (!cancelled) setThreads(Array.isArray(data) ? data : []);

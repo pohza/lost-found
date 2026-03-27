@@ -2,6 +2,7 @@ import "./../App.css";
 import logo from "./../assets/logo.png";
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { login } from "../services/auth";
 
 function LoginPage() {
   const navigate = useNavigate();
@@ -16,7 +17,7 @@ function LoginPage() {
     if (!email.trim() || !password) return;
     setLoading(true);
     try {
-      const res = await fetch("/api/auth/login", {
+      const res = await fetch("http://localhost:3000/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: email.trim(), password }),
@@ -29,11 +30,11 @@ function LoginPage() {
       }
       const err = (await res.json()) as { message?: string };
       setError(err.message || "Login failed");
-    } catch {
-      setError("Network error");
     } finally {
       setLoading(false);
     }
+    await login(email, password);
+    navigate("/home");
   };
 
   return (
@@ -116,4 +117,3 @@ function LoginPage() {
 }
 
 export default LoginPage;
-

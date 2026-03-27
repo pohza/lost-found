@@ -44,3 +44,9 @@ function App() {
 }
 
 export default App;
+
+const token = localStorage.getItem("token");
+
+if (token) {
+  // user is logged in
+}

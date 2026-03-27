@@ -128,7 +128,7 @@ function ClaimPage() {
       setLoading(true);
       setError(null);
       try {
-        const res = await fetch(`/api/items/${id}`, { headers: authHeaders() });
+        const res = await fetch(`http://localhost:3000/api/items/${id}`, { headers: authHeaders() });
         if (!res.ok) throw new Error("Not found");
         const data = (await res.json()) as ClaimItemSummary;
         if (!cancelled) setItem(data);
@@ -164,14 +164,14 @@ function ClaimPage() {
         formData.append("description", values.description);
         formData.append("serialNumber", values.serialNumber);
         formData.append("evidencePhoto", values.evidencePhoto);
-        const res = await fetch(`/api/items/${id}/claim`, {
+        const res = await fetch(`http://localhost:3000/api/items/${id}/claim`, {
           method: "POST",
           headers: authHeaders(),
           body: formData,
         });
         if (!res.ok) throw new Error("Failed");
       } else {
-        const res = await fetch(`/api/items/${id}/claim`, {
+        const res = await fetch(`http://localhost:3000/api/items/${id}/claim`, {
           method: "POST",
           headers: authHeaders({ "Content-Type": "application/json" }),
           body: JSON.stringify({

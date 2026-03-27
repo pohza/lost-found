@@ -29,7 +29,7 @@ function MyPostsPage() {
     async function load() {
       setLoading(true);
       try {
-        const res = await fetch("/api/me/items", { headers: authHeaders() });
+        const res = await fetch("http://localhost:3000/api/me/items", { headers: authHeaders() });
         if (res.ok) {
           const data = (await res.json()) as unknown;
           if (!cancelled) setPosts(Array.isArray(data) ? data : []);
@@ -50,7 +50,7 @@ function MyPostsPage() {
     if (actionLoading) return;
     setActionLoading(id);
     try {
-      const res = await fetch(`/api/items/${id}/close`, { method: "POST", headers: authHeaders() });
+      const res = await fetch(`http://localhost:3000/api/items/${id}/close`, { method: "POST", headers: authHeaders() });
       if (res.ok) {
         setPosts((prev) =>
           prev.map((p) => (p.id === id ? { ...p, isClosed: true } : p)),
@@ -65,7 +65,7 @@ function MyPostsPage() {
     if (actionLoading || !window.confirm("ต้องการลบประกาศนี้ใช่หรือไม่?")) return;
     setActionLoading(id);
     try {
-      const res = await fetch(`/api/items/${id}`, { method: "DELETE", headers: authHeaders() });
+      const res = await fetch(`http://localhost:3000/api/items/${id}`, { method: "DELETE", headers: authHeaders() });
       if (res.ok) {
         setPosts((prev) => prev.filter((p) => p.id !== id));
       }

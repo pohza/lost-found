@@ -3,6 +3,7 @@ import logo from "./../assets/logo.png";
 import googleLogo from "./../assets/google-logo-icon-gsuite-hd-701751694791470gzbayltphh.png";
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { register } from "../services/auth";
 
 function SignupPage() {
   const navigate = useNavigate();
@@ -18,7 +19,7 @@ function SignupPage() {
     if (!email.trim() || !password || !fullName.trim()) return;
     setLoading(true);
     try {
-      const res = await fetch("/api/auth/register", {
+      const res = await fetch("http://localhost:3000/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: email.trim(), password, fullName: fullName.trim() }),
@@ -31,11 +32,11 @@ function SignupPage() {
       }
       const err = (await res.json()) as { message?: string };
       setError(err.message || "Registration failed");
-    } catch {
-      setError("Network error");
     } finally {
       setLoading(false);
     }
+    await register(email, password);
+    navigate("/home");
   };
 
   return (

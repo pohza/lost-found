@@ -48,7 +48,7 @@ function NotificationsPage() {
     let cancelled = false;
     async function load() {
       try {
-        const res = await fetch("/api/notifications", { headers: authHeaders() });
+        const res = await fetch("http://localhost:3000/api/notifications", { headers: authHeaders() });
         if (res.ok) {
           const data = (await res.json()) as unknown;
           if (!cancelled) setList(Array.isArray(data) ? data : []);

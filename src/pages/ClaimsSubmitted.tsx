@@ -32,7 +32,7 @@ function ClaimsSubmittedPage() {
       setLoading(true);
       setError(null);
       try {
-        const res = await fetch("/api/claims?status=submitted", { headers: authHeaders() });
+        const res = await fetch("http://localhost:3000/api/claims?status=submitted", { headers: authHeaders() });
         if (!res.ok) throw new Error("Failed");
         const data = (await res.json()) as unknown;
         if (!cancelled) setClaims(Array.isArray(data) ? data : []);

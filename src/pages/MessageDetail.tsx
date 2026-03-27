@@ -27,7 +27,7 @@ function MessageDetailPage() {
     let cancelled = false;
     async function load() {
       try {
-        const res = await fetch(`/api/me/messages/${id}`, { headers: authHeaders() });
+        const res = await fetch(`http://localhost:3000/api/me/messages/${id}`, { headers: authHeaders() });
         if (res.ok) {
           const data = (await res.json()) as { messages?: MessageItem[] };
           if (!cancelled && Array.isArray(data.messages)) setMessages(data.messages);
@@ -49,7 +49,7 @@ function MessageDetailPage() {
     setReply("");
     setSending(true);
     try {
-      const res = await fetch(`/api/me/messages/${id}`, {
+      const res = await fetch(`http://localhost:3000/api/me/messages/${id}`, {
         method: "POST",
         headers: authHeaders({ "Content-Type": "application/json" }),
         body: JSON.stringify({ text }),

@@ -45,7 +45,7 @@ function ReportFoundPage() {
     let cancelled = false;
     (async () => {
       try {
-        const res = await fetch(`/api/items/${editId}`, { headers: authHeaders() });
+        const res = await fetch(`http://localhost:3000/api/items/${editId}`, { headers: authHeaders() });
         if (!res.ok) return;
         const data = (await res.json()) as {
           title: string;
@@ -126,10 +126,10 @@ function ReportFoundPage() {
           const formData = new FormData();
           Object.entries(payload).forEach(([k, v]) => formData.append(k, String(v)));
           formData.append("photo", formValues.photo);
-          const res = await fetch(`/api/items/${editId}`, { method: "PUT", headers: authHeaders(), body: formData });
+          const res = await fetch(`http://localhost:3000/api/items/${editId}`, { method: "PUT", headers: authHeaders(), body: formData });
           if (!res.ok) throw new Error("Update failed");
         } else {
-          const res = await fetch(`/api/items/${editId}`, {
+          const res = await fetch(`http://localhost:3000/api/items/${editId}`, {
             method: "PUT",
             headers: authHeaders({ "Content-Type": "application/json" }),
             body: JSON.stringify(payload),
@@ -160,10 +160,10 @@ function ReportFoundPage() {
         const formData = new FormData();
         Object.entries(payload).forEach(([k, v]) => formData.append(k, String(v)));
         formData.append("photo", formValues.photo);
-        const res = await fetch("/api/items", { method: "POST", headers: authHeaders(), body: formData });
+        const res = await fetch("http://localhost:3000/api/items", { method: "POST", headers: authHeaders(), body: formData });
         if (!res.ok) throw new Error("Create failed");
       } else {
-        const res = await fetch("/api/items", {
+        const res = await fetch("http://localhost:3000/api/items", {
           method: "POST",
           headers: authHeaders({ "Content-Type": "application/json" }),
           body: JSON.stringify(payload),

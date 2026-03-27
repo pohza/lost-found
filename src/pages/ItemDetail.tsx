@@ -39,7 +39,7 @@ function ItemDetailPage() {
       setLoading(true);
       setError(null);
       try {
-        const res = await fetch(`/api/items/${id}`, { headers: authHeaders() });
+        const res = await fetch(`http://localhost:3000/api/items/${id}`, { headers: authHeaders() });
         if (!res.ok) throw new Error("Not found");
         const data = (await res.json()) as ItemDetailData;
         if (!cancelled) setItem(data);
