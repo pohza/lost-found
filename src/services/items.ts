@@ -1,7 +1,9 @@
 import { api } from "../lib/api";
 
-export const getItems = (query = "") =>
-  api(`/items${query}`);
+export const getItems = (type?: string) => {
+  const query = type ? `?type=${type}` : "";
+  return api(`/items${query}`);
+};
 
 export const getItem = (id: number) =>
   api(`/items/${id}`);

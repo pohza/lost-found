@@ -4,6 +4,7 @@ import profileAvatar from "./../assets/profile.jpg";
 import { Link } from "react-router-dom";
 import { useEffect, useMemo, useState } from "react";
 import { authHeaders } from "../api";
+import { getItems } from "../services/items";
 
 type ItemStatus = "lost" | "found";
 export type SortOption = "latest" | "nearDate" | "views";
@@ -20,14 +21,14 @@ export interface ItemCardData {
 }
 
 function HomePage() {
-  const [activeTab, setActiveTab] = useState<ItemStatus>("lost");
+  const [activeTab, setActiveTab] = useState<"lost" | "found">("lost");
+  const [items, setItems] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState("");
   const [locationFilter, setLocationFilter] = useState("");
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
   const [sort, setSort] = useState<SortOption>("latest");
-  const [items, setItems] = useState<ItemCardData[]>([]);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -39,6 +40,18 @@ function HomePage() {
     if (dateFrom) params.set("dateFrom", dateFrom);
     if (dateTo) params.set("dateTo", dateTo);
     params.set("sort", sort);
+
+    const fetchItems = async () => {
+      setLoading(true);
+      try {
+        const data = await getItems(activeTab); // 👈 key line
+        setItems(data);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    }; fetchItems();
 
     async function load() {
       setLoading(true);

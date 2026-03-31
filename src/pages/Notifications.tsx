@@ -4,6 +4,7 @@ import profileAvatar from "./../assets/profile.jpg";
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { authHeaders } from "../api";
+import { getNotifications } from "../services/notifications";
 
 export interface NotificationListItem {
   id: string;
@@ -41,7 +42,7 @@ function IconPhone() {
 }
 
 function NotificationsPage() {
-  const [list, setList] = useState<NotificationListItem[]>([]);
+  const [list, setList] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -59,6 +60,19 @@ function NotificationsPage() {
     }
     load();
     return () => { cancelled = true; };
+
+    const fetchData = async () => {
+      try {
+        const data = await getNotifications();
+        setList(data);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
   }, []);
 
   return (
