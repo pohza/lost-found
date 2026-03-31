@@ -26,6 +26,14 @@ SET time_zone = "+00:00";
 --
 -- Table structure for table `claims`
 --
+CREATE DATABASE lostfound;
+USE lostfound;
+
+
+
+
+
+
 
 CREATE TABLE `claims` (
   `id` int(11) NOT NULL,
