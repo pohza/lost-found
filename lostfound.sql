@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 27, 2026 at 07:28 AM
+-- Generation Time: Mar 31, 2026 at 09:11 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -33,8 +33,6 @@ USE lostfound;
 
 
 
-
-
 CREATE TABLE `claims` (
   `id` int(11) NOT NULL,
   `item_id` int(11) DEFAULT NULL,
@@ -42,6 +40,13 @@ CREATE TABLE `claims` (
   `message` text DEFAULT NULL,
   `status` varchar(50) DEFAULT 'submitted'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `claims`
+--
+
+INSERT INTO `claims` (`id`, `item_id`, `user_id`, `message`, `status`) VALUES
+(2, 1, 2, NULL, 'submitted');
 
 -- --------------------------------------------------------
 
@@ -58,6 +63,14 @@ CREATE TABLE `items` (
   `location` varchar(255) DEFAULT NULL,
   `status` varchar(50) DEFAULT 'open'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `items`
+--
+
+INSERT INTO `items` (`id`, `user_id`, `title`, `description`, `type`, `location`, `status`) VALUES
+(1, 1, NULL, 'aaa', 'lost', 'aaa', 'open'),
+(2, 1, NULL, 'bbb', 'found', 'bbb', 'open');
 
 -- --------------------------------------------------------
 
@@ -80,9 +93,22 @@ CREATE TABLE `messages` (
 
 CREATE TABLE `notifications` (
   `id` int(11) NOT NULL,
-  `user_id` int(11) DEFAULT NULL,
-  `claim_id` int(11) DEFAULT NULL
+  `user_id` int(11) NOT NULL,
+  `claim_id` int(11) NOT NULL,
+  `title` varchar(255) DEFAULT NULL,
+  `fullName` varchar(255) DEFAULT NULL,
+  `contactEmail` varchar(255) DEFAULT NULL,
+  `contactNumber` varchar(50) DEFAULT NULL,
+  `status` enum('pending','approved','rejected') DEFAULT 'pending',
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `notifications`
+--
+
+INSERT INTO `notifications` (`id`, `user_id`, `claim_id`, `title`, `fullName`, `contactEmail`, `contactNumber`, `status`, `created_at`) VALUES
+(1, 1, 2, NULL, NULL, 'bbb@gmail.com', NULL, 'pending', '2026-03-31 19:03:18');
 
 -- --------------------------------------------------------
 
@@ -94,8 +120,17 @@ CREATE TABLE `users` (
   `id` int(11) NOT NULL,
   `email` varchar(255) DEFAULT NULL,
   `password` varchar(255) DEFAULT NULL,
-  `name` varchar(255) DEFAULT NULL
+  `name` varchar(255) DEFAULT NULL,
+  `phone` varchar(50) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `users`
+--
+
+INSERT INTO `users` (`id`, `email`, `password`, `name`, `phone`) VALUES
+(1, 'aaa@gmail.com', '$2b$10$egaux4dm.778yxt./sauh.EnZEytfo4WrDh65KuJKo4nfaKOfzmji', NULL, NULL),
+(2, 'bbb@gmail.com', '$2b$10$8GqpikerbULo4hzjoAfdqOlDfon.KVw/SrLngvYgV.S1PpF7panf.', NULL, NULL);
 
 --
 -- Indexes for dumped tables
@@ -139,13 +174,13 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `claims`
 --
 ALTER TABLE `claims`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `items`
 --
 ALTER TABLE `items`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `messages`
@@ -157,13 +192,13 @@ ALTER TABLE `messages`
 -- AUTO_INCREMENT for table `notifications`
 --
 ALTER TABLE `notifications`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
