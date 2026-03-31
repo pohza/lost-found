@@ -3,7 +3,17 @@ const db = require("../config/db");
 const auth = require("../middleware/auth");
 
 router.get("/", async (req, res) => {
-  const [rows] = await db.query("SELECT * FROM items");
+  const { type } = req.query;
+
+  let query = "SELECT * FROM items WHERE 1=1";
+  const params = [];
+
+  if (type) {
+    query += " AND type = ?";
+    params.push(type);
+  }
+
+  const [rows] = await db.query(query, params);
   res.json(rows);
 });
 
