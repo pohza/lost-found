@@ -1,114 +1,93 @@
--- phpMyAdmin SQL Dump
--- version 5.2.1
--- https://www.phpmyadmin.net/
---
--- Host: 127.0.0.1
--- Generation Time: Mar 27, 2026 at 05:35 AM
--- Server version: 10.4.32-MariaDB
--- PHP Version: 8.2.12
+CREATE TABLE IF NOT EXISTS users (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  email VARCHAR(255) NOT NULL UNIQUE,
+  password VARCHAR(255) NOT NULL,
+  name VARCHAR(255) DEFAULT NULL,
+  phone VARCHAR(50) DEFAULT NULL
+);
 
-SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
-START TRANSACTION;
-SET time_zone = "+00:00";
+CREATE TABLE IF NOT EXISTS items (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT NOT NULL,
+  title VARCHAR(255) DEFAULT NULL,
+  description TEXT DEFAULT NULL,
+  type VARCHAR(50) DEFAULT NULL,
+  location VARCHAR(255) DEFAULT NULL,
+  status VARCHAR(50) DEFAULT 'open',
+  event_at DATETIME DEFAULT NULL,
+  image_url VARCHAR(512) DEFAULT NULL,
+  handover_type VARCHAR(50) DEFAULT NULL,
+  how_to_claim TEXT DEFAULT NULL,
+  view_count INT NOT NULL DEFAULT 0,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
 
+CREATE TABLE IF NOT EXISTS claims (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  item_id INT DEFAULT NULL,
+  user_id INT DEFAULT NULL,
+  message TEXT DEFAULT NULL,
+  description TEXT DEFAULT NULL,
+  full_name VARCHAR(255) DEFAULT NULL,
+  contact_email VARCHAR(255) DEFAULT NULL,
+  contact_phone VARCHAR(50) DEFAULT NULL,
+  serial_number VARCHAR(255) DEFAULT NULL,
+  evidence_url VARCHAR(512) DEFAULT NULL,
+  status VARCHAR(50) DEFAULT 'submitted',
+  FOREIGN KEY (item_id) REFERENCES items(id) ON DELETE CASCADE,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
+);
 
-/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
-/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
-/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8mb4 */;
+CREATE TABLE IF NOT EXISTS notifications (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT NOT NULL,
+  claim_id INT NOT NULL,
+  title VARCHAR(255) DEFAULT NULL,
+  fullName VARCHAR(255) DEFAULT NULL,
+  contactEmail VARCHAR(255) DEFAULT NULL,
+  contactNumber VARCHAR(50) DEFAULT NULL,
+  status ENUM('pending','approved','rejected') DEFAULT 'pending',
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+  FOREIGN KEY (claim_id) REFERENCES claims(id) ON DELETE CASCADE
+);
 
---
--- Database: `init`
---
+CREATE TABLE IF NOT EXISTS threads (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  claim_id INT NOT NULL,
+  item_id INT NOT NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE KEY uniq_claim (claim_id),
+  FOREIGN KEY (claim_id) REFERENCES claims(id) ON DELETE CASCADE,
+  FOREIGN KEY (item_id) REFERENCES items(id) ON DELETE CASCADE
+);
 
--- --------------------------------------------------------
+CREATE TABLE IF NOT EXISTS messages (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  thread_id INT NOT NULL,
+  sender_id INT NOT NULL,
+  text TEXT DEFAULT NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (thread_id) REFERENCES threads(id) ON DELETE CASCADE,
+  FOREIGN KEY (sender_id) REFERENCES users(id) ON DELETE CASCADE
+);
 
---
--- Table structure for table `claims`
---
+CREATE TABLE IF NOT EXISTS password_reset_tokens (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT NOT NULL,
+  token_hash CHAR(64) NOT NULL,
+  expires_at DATETIME NOT NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  INDEX idx_token_hash (token_hash),
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
 
-CREATE TABLE `claims` (
-  `id` int(11) NOT NULL,
-  `item_id` int(11) DEFAULT NULL,
-  `user_id` int(11) DEFAULT NULL,
-  `message` text DEFAULT NULL,
-  `status` varchar(50) DEFAULT 'submitted'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `items`
---
-
-CREATE TABLE `items` (
-  `id` int(11) NOT NULL,
-  `user_id` int(11) DEFAULT NULL,
-  `title` varchar(255) DEFAULT NULL,
-  `description` text DEFAULT NULL,
-  `type` varchar(50) DEFAULT NULL,
-  `location` varchar(255) DEFAULT NULL,
-  `status` varchar(50) DEFAULT 'open'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `users`
---
-
-CREATE TABLE `users` (
-  `id` int(11) NOT NULL,
-  `email` varchar(255) DEFAULT NULL,
-  `password` varchar(255) DEFAULT NULL,
-  `name` varchar(255) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Indexes for dumped tables
---
-
---
--- Indexes for table `claims`
---
-ALTER TABLE `claims`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `items`
---
-ALTER TABLE `items`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `users`
---
-ALTER TABLE `users`
-  ADD PRIMARY KEY (`id`);
-
---
--- AUTO_INCREMENT for dumped tables
---
-
---
--- AUTO_INCREMENT for table `claims`
---
-ALTER TABLE `claims`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `items`
---
-ALTER TABLE `items`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `users`
---
-ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-COMMIT;
-
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+CREATE TABLE IF NOT EXISTS thread_reads (
+  thread_id INT NOT NULL,
+  user_id INT NOT NULL,
+  last_seen_message_id INT NOT NULL DEFAULT 0,
+  PRIMARY KEY (thread_id, user_id),
+  FOREIGN KEY (thread_id) REFERENCES threads(id) ON DELETE CASCADE,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);

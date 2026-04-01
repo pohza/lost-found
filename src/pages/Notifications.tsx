@@ -4,6 +4,7 @@ import profileAvatar from "./../assets/profile.jpg";
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { authHeaders } from "../api";
+import { API_URL } from "../lib/api";
 import { getNotifications } from "../services/notifications";
 
 export interface NotificationListItem {
@@ -49,7 +50,7 @@ function NotificationsPage() {
     let cancelled = false;
     async function load() {
       try {
-        const res = await fetch("http://localhost:3000/api/notifications", { headers: authHeaders() });
+        const res = await fetch(`${API_URL}/notifications`, { headers: authHeaders() });
         if (res.ok) {
           const data = (await res.json()) as unknown;
           if (!cancelled) setList(Array.isArray(data) ? data : []);

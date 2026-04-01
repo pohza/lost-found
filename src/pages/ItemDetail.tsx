@@ -4,6 +4,7 @@ import profileAvatar from "./../assets/profile.jpg";
 import { Link, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { authHeaders } from "../api";
+import { API_URL } from "../lib/api";
 
 type ItemStatus = "lost" | "found";
 
@@ -39,7 +40,7 @@ function ItemDetailPage() {
       setLoading(true);
       setError(null);
       try {
-        const res = await fetch(`http://localhost:3000/api/items/${id}`, { headers: authHeaders() });
+        const res = await fetch(`${API_URL}/items/${id}`, { headers: authHeaders() });
         if (!res.ok) throw new Error("Not found");
         const data = (await res.json()) as ItemDetailData;
         if (!cancelled) setItem(data);
@@ -133,7 +134,7 @@ function ItemDetailPage() {
               <article className="detail-card">
                 <div className="detail-image-frame">
                   <img
-                    src={item.imageUrl}
+                    src={item.imageUrl || logo}
                     alt={item.title}
                     className="detail-image"
                   />

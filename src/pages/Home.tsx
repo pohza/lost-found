@@ -4,7 +4,7 @@ import profileAvatar from "./../assets/profile.jpg";
 import { Link } from "react-router-dom";
 import { useEffect, useMemo, useState } from "react";
 import { authHeaders } from "../api";
-import { getItems } from "../services/items";
+import { API_URL } from "../lib/api";
 
 type ItemStatus = "lost" | "found";
 export type SortOption = "latest" | "nearDate" | "views";
@@ -41,23 +41,11 @@ function HomePage() {
     if (dateTo) params.set("dateTo", dateTo);
     params.set("sort", sort);
 
-    const fetchItems = async () => {
-      setLoading(true);
-      try {
-        const data = await getItems(activeTab); // 👈 key line
-        setItems(data);
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    }; fetchItems();
-
     async function load() {
       setLoading(true);
       setError(null);
       try {
-        const res = await fetch(`http://localhost:3000/api/items?${params.toString()}`, { headers: authHeaders() });
+        const res = await fetch(`${API_URL}/items?${params.toString()}`, { headers: authHeaders() });
         if (!res.ok) throw new Error("Failed to load");
         const data = (await res.json()) as unknown;
         if (!cancelled) {
@@ -195,7 +183,7 @@ function HomePage() {
                 <Link to={`/item/${item.id}`} className="home-item-mainlink">
                   <div className="home-item-image-frame">
                     <img
-                      src={item.imageUrl}
+                      src={item.imageUrl || logo}
                       alt={item.title}
                       className="home-item-image"
                     />

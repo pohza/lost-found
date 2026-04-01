@@ -4,6 +4,7 @@ import profileAvatar from "./../assets/profile.jpg";
 import { Link, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { authHeaders } from "../api";
+import { API_URL } from "../lib/api";
 
 interface MessageItem {
   id: string;
@@ -27,7 +28,7 @@ function MessageDetailPage() {
     let cancelled = false;
     async function load() {
       try {
-        const res = await fetch(`http://localhost:3000/api/me/messages/${id}`, { headers: authHeaders() });
+        const res = await fetch(`${API_URL}/me/messages/${id}`, { headers: authHeaders() });
         if (res.ok) {
           const data = (await res.json()) as { messages?: MessageItem[] };
           if (!cancelled && Array.isArray(data.messages)) setMessages(data.messages);
@@ -49,7 +50,7 @@ function MessageDetailPage() {
     setReply("");
     setSending(true);
     try {
-      const res = await fetch(`http://localhost:3000/api/me/messages/${id}`, {
+      const res = await fetch(`${API_URL}/me/messages/${id}`, {
         method: "POST",
         headers: authHeaders({ "Content-Type": "application/json" }),
         body: JSON.stringify({ text }),

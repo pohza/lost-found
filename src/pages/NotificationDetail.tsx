@@ -5,6 +5,7 @@ import profileImage from "./../assets/profile.jpg";
 import { Link, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { authHeaders } from "../api";
+import { API_URL } from "../lib/api";
 
 interface NotificationDetailData {
   id: string;
@@ -63,7 +64,7 @@ function NotificationDetailPage() {
       setLoading(true);
       setError(null);
       try {
-        const res = await fetch(`http://localhost:3000/api/notifications/${id}`, { headers: authHeaders() });
+        const res = await fetch(`${API_URL}/notifications/${id}`, { headers: authHeaders() });
         if (!res.ok) throw new Error("Not found");
         const data = (await res.json()) as NotificationDetailData;
         if (!cancelled) setItem(data);
@@ -86,7 +87,7 @@ function NotificationDetailPage() {
     if (!item || actionLoading) return;
     setActionLoading(true);
     try {
-      const res = await fetch(`http://localhost:3000/api/notifications/${item.id}/approve`, { method: "POST", headers: authHeaders() });
+      const res = await fetch(`${API_URL}/notifications/${item.id}/approve`, { method: "POST", headers: authHeaders() });
       if (res.ok) setItem(null);
     } finally {
       setActionLoading(false);
@@ -97,7 +98,7 @@ function NotificationDetailPage() {
     if (!item || actionLoading) return;
     setActionLoading(true);
     try {
-      const res = await fetch(`http://localhost:3000/api/notifications/${item.id}/cancel`, { method: "POST", headers: authHeaders() });
+      const res = await fetch(`${API_URL}/notifications/${item.id}/cancel`, { method: "POST", headers: authHeaders() });
       if (res.ok) setItem(null);
     } finally {
       setActionLoading(false);

@@ -6,13 +6,18 @@ services:
     container_name: lostfound-mysql
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: lostfound
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root}
+      MYSQL_DATABASE: ${DB_NAME:-lostfound}
     ports:
       - "3307:3306"
     volumes:
       - mysql_data:/var/lib/mysql
       - ./backend/sql:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -uroot -p$$MYSQL_ROOT_PASSWORD"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
 
   api:
     build: ./backend
@@ -21,30 +26,30 @@ services:
     ports:
       - "3000:3000"
     depends_on:
-      - mysql
+      mysql:
+        condition: service_healthy
     environment:
+      PORT: 3000
       DB_HOST: mysql
-      DB_USER: root
-      DB_PASSWORD: root
-      DB_NAME: lostfound
-      JWT_SECRET: supersecret
+      DB_USER: ${DB_USER:-root}
+      DB_PASSWORD: ${DB_PASSWORD:-root}
+      DB_NAME: ${DB_NAME:-lostfound}
+      JWT_SECRET: ${JWT_SECRET:-change-me}
+      CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost:8080}
+      APP_PUBLIC_URL: ${APP_PUBLIC_URL:-http://localhost:8080}
+      PASSWORD_RESET_RETURN_LINK: ${PASSWORD_RESET_RETURN_LINK:-}
     volumes:
-      - ./backend:/app
-    command: npm run dev
+      - api_uploads:/app/uploads
 
   frontend:
-    build: ./frontend
+    build: .
     container_name: lostfound-frontend
+    restart: always
     ports:
       - "8080:80"
     depends_on:
       - api
-    environment:
-      VITE_API_URL: http://localhost:3000/api
-    volumes:
-      - ./frontend:/app
-      - /app/node_modules
-    command: npm run dev -- --host
 
 volumes:
   mysql_data:
+  api_uploads:

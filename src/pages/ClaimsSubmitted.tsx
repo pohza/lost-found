@@ -5,6 +5,7 @@ import profileImage from "./../assets/profile.jpg";
 import { Link } from "react-router-dom";
 import { useEffect, useMemo, useState } from "react";
 import { authHeaders } from "../api";
+import { API_URL } from "../lib/api";
 
 export type ClaimStatus = "submitted" | "need_more_info" | "completed" | "approved" | "canceled";
 
@@ -32,7 +33,7 @@ function ClaimsSubmittedPage() {
       setLoading(true);
       setError(null);
       try {
-        const res = await fetch("http://localhost:3000/api/claims?status=submitted", { headers: authHeaders() });
+        const res = await fetch(`${API_URL}/claims?status=submitted`, { headers: authHeaders() });
         if (!res.ok) throw new Error("Failed");
         const data = (await res.json()) as unknown;
         if (!cancelled) setClaims(Array.isArray(data) ? data : []);

@@ -4,6 +4,7 @@ import profileAvatar from "./../assets/profile.jpg";
 import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useState, useRef, useCallback } from "react";
 import { authHeaders } from "../api";
+import { API_URL } from "../lib/api";
 import type { FormEvent } from "react";
 
 const AUTO_SAVE_DELAY_MS = 800;
@@ -38,7 +39,7 @@ function ProfilePage() {
     let cancelled = false;
     (async () => {
       try {
-        const res = await fetch("http://localhost:3000/api/me", { headers: authHeaders() });
+        const res = await fetch(`${API_URL}/me`, { headers: authHeaders() });
         if (res.ok) {
           const data = (await res.json()) as { fullName?: string; email?: string };
           if (!cancelled) {
@@ -58,10 +59,10 @@ function ProfilePage() {
   const saveProfile = useCallback(() => {
     (async () => {
       try {
-        const res = await fetch("http://localhost:3000/api/me", {
+        const res = await fetch(`${API_URL}/me`, {
           method: "PATCH",
           headers: authHeaders({ "Content-Type": "application/json" }),
-          body: JSON.stringify({ fullName, email }),
+          body: JSON.stringify({ fullName }),
         });
         if (res.ok) {
           setSavedMessage(true);
@@ -71,7 +72,7 @@ function ProfilePage() {
         // แสดง error ได้ถ้าต้องการ
       }
     })();
-  }, [fullName, email]);
+  }, [fullName]);
 
   useEffect(() => {
     if (loading) return;
@@ -80,7 +81,7 @@ function ProfilePage() {
     return () => {
       if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current);
     };
-  }, [fullName, email, loading, saveProfile]);
+  }, [fullName, loading, saveProfile]);
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -147,9 +148,10 @@ function ProfilePage() {
                   <input
                     type="email"
                     className="report-input"
-                    placeholder="Placeholder"
+                    placeholder=""
                     value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    readOnly
+                    aria-readonly="true"
                   />
                 </div>
               </label>

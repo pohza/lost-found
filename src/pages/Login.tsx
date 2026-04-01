@@ -17,24 +17,14 @@ function LoginPage() {
     if (!email.trim() || !password) return;
     setLoading(true);
     try {
-      const res = await fetch("http://localhost:3000/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: email.trim(), password }),
-      });
-      if (res.ok) {
-        const data = (await res.json()) as { token?: string };
-        if (data.token) localStorage.setItem("token", data.token);
-        navigate("/home");
-        return;
-      }
-      const err = (await res.json()) as { message?: string };
-      setError(err.message || "Login failed");
+      await login(email.trim(), password);
+      navigate("/home");
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Login failed";
+      setError(msg);
     } finally {
       setLoading(false);
     }
-    await login(email, password);
-    navigate("/home");
   };
 
   return (
@@ -85,9 +75,9 @@ function LoginPage() {
               {loading ? "Loading..." : "Continue"}
             </button>
 
-            <button type="button" className="link-button">
+            <Link to="/forgot-password" className="link-button" style={{ textAlign: "center", display: "block" }}>
               Forgot Password
-            </button>
+            </Link>
 
             <div className="divider">
               <span className="divider-line" />

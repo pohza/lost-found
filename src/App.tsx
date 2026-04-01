@@ -1,6 +1,8 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import LoginPage from "./pages/Login";
 import SignupPage from "./pages/Signup";
+import ForgotPasswordPage from "./pages/ForgotPassword";
+import ResetPasswordPage from "./pages/ResetPassword";
 import HomePage from "./pages/Home";
 import ReportPage from "./pages/Report";
 import ReportLostPage from "./pages/ReportLost";
@@ -23,6 +25,8 @@ function App() {
       <Route path="/" element={<Navigate to="/login" replace />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/signup" element={<SignupPage />} />
+      <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+      <Route path="/reset-password" element={<ResetPasswordPage />} />
       <Route path="/home" element={<HomePage />} />
       <Route path="/item/:id" element={<ItemDetailPage />} />
       <Route path="/claim/:id" element={<ClaimPage />} />
@@ -44,9 +48,3 @@ function App() {
 }
 
 export default App;
-
-const token = localStorage.getItem("token");
-
-if (token) {
-  // user is logged in
-}

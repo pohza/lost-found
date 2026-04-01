@@ -19,24 +19,14 @@ function SignupPage() {
     if (!email.trim() || !password || !fullName.trim()) return;
     setLoading(true);
     try {
-      const res = await fetch("http://localhost:3000/api/auth/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: email.trim(), password, fullName: fullName.trim() }),
-      });
-      if (res.ok) {
-        const data = (await res.json()) as { token?: string };
-        if (data.token) localStorage.setItem("token", data.token);
-        navigate("/home");
-        return;
-      }
-      const err = (await res.json()) as { message?: string };
-      setError(err.message || "Registration failed");
+      await register(email.trim(), password, fullName.trim());
+      navigate("/home");
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Registration failed";
+      setError(msg);
     } finally {
       setLoading(false);
     }
-    await register(email, password);
-    navigate("/home");
   };
 
   return (
@@ -77,11 +67,11 @@ function SignupPage() {
 
           <form className="login-form" onSubmit={handleSubmit}>
             <label className="field">
-              <span className="field-label">Email or Phone</span>
+              <span className="field-label">Email</span>
               <input
-                type="text"
+                type="email"
                 className="field-input"
-                placeholder="Enter your email or phone"
+                placeholder="Enter your email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 autoComplete="email"

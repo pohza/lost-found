@@ -1,4 +1,5 @@
-const API_URL = import.meta.env.VITE_API_URL;
+/** Base URL for API (dev: http://localhost:3000/api, production: /api behind same host). */
+export const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:3000/api";
 
 export const api = async (
   path: string,

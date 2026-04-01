@@ -154,11 +154,14 @@ export default defineConfig({
    - Message threads ควรถูกสร้างโดย backend เมื่อมี claim หรือ notification
    - Frontend ไม่ได้สร้าง thread เอง แค่แสดงและส่งข้อความ
 
-## 🐳 Docker Support (Frontend)
+## 🐳 Docker Deployment (Production)
 
-มี Dockerfile และ docker-compose สำหรับรัน frontend แบบ container แล้ว
+โปรเจกต์นี้รองรับการรันแบบ production ด้วย Docker Compose ครบทั้ง:
+- `mysql` (database)
+- `api` (backend)
+- `frontend` (nginx เสิร์ฟไฟล์ React + proxy `/api` ไป backend)
 
-### Build & Run ด้วย Docker ตรง ๆ
+### Build & Run ด้วย Docker ตรง ๆ (Frontend only)
 
 ```bash
 docker build -t lost-found-frontend .
@@ -167,15 +170,44 @@ docker run --rm -p 8080:80 lost-found-frontend
 
 จากนั้นเปิด `http://localhost:8080`
 
-### ใช้ Docker Compose
+### ใช้ Docker Compose (แนะนำ)
 
 ```bash
 docker compose up --build
 ```
 
-ระบบจะรันที่ `http://localhost:8080`
+ระบบจะรันที่:
+- Frontend: `http://localhost:8080`
+- Backend health: `http://localhost:3000/health`
 
-> หมายเหตุ: ถ้ามี backend service แยกต่างหาก สามารถเพิ่มเข้าไปใน `docker-compose.yml` และตั้งค่า proxy `/api` ใน `nginx.conf` ให้ชี้ไปที่ backend ได้
+#### Environment ที่ควรตั้งก่อนขึ้นจริง
+
+สร้างไฟล์ `.env` ที่ root แล้วกำหนดค่าอย่างน้อย:
+
+```env
+MYSQL_ROOT_PASSWORD=strong-password
+DB_USER=root
+DB_PASSWORD=strong-password
+DB_NAME=lostfound
+JWT_SECRET=super-long-random-secret
+CORS_ORIGIN=https://your-domain.com
+```
+
+จากนั้นรัน:
+
+```bash
+docker compose up -d --build
+docker compose ps
+./scripts/smoke-test.sh http://localhost:3000
+```
+
+#### Go-live checklist (ขั้นต่ำ)
+
+- เปลี่ยน `JWT_SECRET` เป็นค่ายาวและสุ่ม
+- ตั้ง `CORS_ORIGIN` เป็นโดเมนจริง (ห้ามใช้ `*` บน production)
+- ยืนยันว่า `MYSQL_ROOT_PASSWORD` และ `DB_PASSWORD` ไม่ใช่ค่าดีฟอลต์
+- รัน smoke test หลัง deploy ทุกครั้ง
+- เปิด HTTPS (เช่น Nginx + Let's Encrypt) ก่อนใช้งานจริง
 
 ## 📄 License
 
